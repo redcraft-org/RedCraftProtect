@@ -1,0 +1,68 @@
+package org.redcraft.redcraftprotect.models.world;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.redcraft.redcraftprotect.RedCraftProtect;
+
+import java.util.*;
+
+public class ProtectedElements {
+    public HashMap<Location, ProtectedElement> elements = new HashMap<>();
+
+
+    public boolean isBlockBreakable(Block block, UUID breaker){
+        if (! RedCraftProtect.getInstance().protectedBlocks.contains(block.getType().name()))
+        {
+            return true;
+        }
+        ProtectedElement protectedElement = this.get(block.getLocation());
+        if (protectedElement != null && protectedElement.isBreakableBy(breaker)){
+            return true;
+        }
+        return false;
+    }
+
+    public void add(ProtectedElement protectedElement){
+        this.elements.put(protectedElement.location, protectedElement);
+    }
+
+    public ProtectedElement get(Location location){
+        return this.elements.getOrDefault(location, null);
+    }
+
+    public ProtectedElement get(Block block){
+        return this.elements.getOrDefault(block.getLocation(), null);
+    }
+
+    public ArrayList<UUID> getPlayers(Location location){
+        ProtectedElement protectedElement = this.get(location);
+        if (protectedElement == null){
+            return new ArrayList<>();
+        }
+        ArrayList<UUID> players = protectedElement.trusted;
+        players.add(protectedElement.owner);
+        return players;
+    }
+
+    public void remove(Location location){
+        this.elements.remove(location);
+    }
+
+    public void remove(Block block){
+        this.elements.remove(block.getLocation());
+    }
+
+    public boolean canBlockBeModified(Location location1, Location location2){
+        if (this.get(location1) == null && this.get(location2) == null){
+            return true;
+        }
+        ArrayList<UUID> players1 = this.getPlayers(location1);
+        ArrayList<UUID> players2 = this.getPlayers(location2);
+        return !Collections.disjoint(Arrays.asList(players1), Arrays.asList(players2));
+    }
+
+    public ArrayList<ProtectedElement> getAll(){
+        return new ArrayList(this.elements.values());
+    }
+}
