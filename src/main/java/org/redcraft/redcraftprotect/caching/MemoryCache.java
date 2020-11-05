@@ -14,7 +14,6 @@ public class MemoryCache {
         if (exists(key)) {
             return cache.get(key);
         }
-
         return null;
     }
 

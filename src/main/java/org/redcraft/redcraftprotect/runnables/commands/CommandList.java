@@ -14,7 +14,7 @@ public class CommandList implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Bukkit.broadcastMessage("List:");
         for (ProtectedElement protectedElement: RedCraftProtect.getInstance().protectedElements.getAll()) {
-            sender.sendMessage(protectedElement.blockName);
+            sender.sendMessage(protectedElement.block.name());
         }
         return true;
     }

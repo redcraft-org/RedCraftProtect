@@ -1,6 +1,6 @@
 package org.redcraft.redcraftprotect;
 
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.Material;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -19,50 +19,47 @@ import java.util.List;
 
 public class RedCraftProtect extends JavaPlugin {
 
-	private static RedCraftProtect instance;
+    private static RedCraftProtect instance;
+    public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
+    public ProtectedElements protectedElements = new ProtectedElements();
+    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.WORKBENCH, Material.HOPPER);
+    private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
+    private BlockPlaceListener blockPlaceListener = new BlockPlaceListener();
+    private BlockBreakListener blockBreakListener = new BlockBreakListener();
+    private EntityExplodeListener entityExplodeListener = new EntityExplodeListener();
+    private InventoryMoveItemListener inventoryMoveItemListener = new InventoryMoveItemListener();
+    private PlayerInteractListener playerInteractListener = new PlayerInteractListener();
 
-	private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
+    static public RedCraftProtect getInstance() {
+        return instance;
+    }
 
-	private BlockPlaceListener blockPlaceListener = new BlockPlaceListener();
-	private BlockBreakListener blockBreakListener = new BlockBreakListener();
-	private EntityExplodeListener entityExplodeListener = new EntityExplodeListener();
-	private InventoryMoveItemListener inventoryMoveItemListener = new InventoryMoveItemListener();
-	private PlayerInteractListener playerInteractListener = new PlayerInteractListener();
+    @Override
+    public void onEnable() {
+        instance = this;
 
+        // Setup
+        Config.readConfig(this);
+        DatabaseManager.connect();
 
-	public ProtectedElements protectedElements = new ProtectedElements();
-	public List<String> protectedBlocks = Arrays.asList("CHEST", "WORKBENCH", "HOPPER");
+        // Schedulers
+        BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.runTaskTimerAsynchronously(this, containerOwnersSynchronizerTask, 5, 60);
 
-	@Override
-	public void onEnable() {
-		instance = this;
+        // Game listeners
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        pluginManager.registerEvents(blockPlaceListener, this);
+        pluginManager.registerEvents(blockBreakListener, this);
+        pluginManager.registerEvents(entityExplodeListener, this);
+        pluginManager.registerEvents(inventoryMoveItemListener, this);
+        pluginManager.registerEvents(playerInteractListener, this);
 
-		// Setup
-		Config.readConfig(this);
-		DatabaseManager.connect();
+        // Commands
+        this.getCommand("rplist").setExecutor(new CommandList());
+    }
 
-		// Schedulers
-		BukkitScheduler scheduler = getServer().getScheduler();
-		scheduler.runTaskTimerAsynchronously(this, containerOwnersSynchronizerTask, 5, 60);
-
-		// Game listeners
-		PluginManager pluginManager = this.getServer().getPluginManager();
-		pluginManager.registerEvents(blockPlaceListener, this);
-		pluginManager.registerEvents(blockBreakListener, this);
-		pluginManager.registerEvents(entityExplodeListener, this);
-		pluginManager.registerEvents(inventoryMoveItemListener, this);
-		pluginManager.registerEvents(playerInteractListener, this);
-
-		// Commands
-		this.getCommand("rplist").setExecutor(new CommandList());
-	}
-
-	@Override
-	public void onDisable() {
-		getServer().getScheduler().cancelTasks(this);
-	}
-
-	static public RedCraftProtect getInstance() {
-		return instance;
-	}
+    @Override
+    public void onDisable() {
+        getServer().getScheduler().cancelTasks(this);
+    }
 }
