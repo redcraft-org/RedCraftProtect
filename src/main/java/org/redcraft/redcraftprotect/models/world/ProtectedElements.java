@@ -6,6 +6,7 @@ import org.redcraft.redcraftprotect.RedCraftProtect;
 
 import java.util.*;
 
+
 public class ProtectedElements {
     public HashMap<Location, ProtectedElement> elements = new HashMap<>();
 
@@ -33,12 +34,26 @@ public class ProtectedElements {
         return this.elements.getOrDefault(block.getLocation(), null);
     }
 
-    public ArrayList<UUID> getPlayers(Location location) {
+
+    public ArrayList<UUID> getPlayersAdded(Location location) {
         ProtectedElement protectedElement = this.get(location);
         if (protectedElement == null) {
             return new ArrayList<>();
         }
-        ArrayList<UUID> players = protectedElement.trusted;
+        ArrayList<UUID> players = new ArrayList<>();
+        players.addAll(protectedElement.trusted);
+        players.addAll(protectedElement.added);
+        players.add(protectedElement.owner.player);
+        return players;
+    }
+
+    public ArrayList<UUID> getPlayersTrusted(Location location) {
+        ProtectedElement protectedElement = this.get(location);
+        if (protectedElement == null) {
+            return new ArrayList<>();
+        }
+        ArrayList<UUID> players = new ArrayList<>();
+        players.addAll(protectedElement.trusted);
         players.add(protectedElement.owner.player);
         return players;
     }
@@ -51,13 +66,13 @@ public class ProtectedElements {
         this.elements.remove(block.getLocation());
     }
 
-    public boolean canBlockBeModified(Location location1, Location location2) {
+    public boolean canBlocksInteract(Location location1, Location location2) {
 
         if (this.get(location1) == null && this.get(location2) == null) {
             return true;
         }
-        ArrayList<UUID> players1 = this.getPlayers(location1);
-        ArrayList<UUID> players2 = this.getPlayers(location2);
+        ArrayList<UUID> players1 = this.getPlayersAdded(location1);
+        ArrayList<UUID> players2 = this.getPlayersAdded(location2);
         return !Collections.disjoint(Arrays.asList(players1), Arrays.asList(players2));
     }
 

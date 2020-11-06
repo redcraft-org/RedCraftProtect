@@ -12,7 +12,7 @@ public class InventoryMoveItemListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onInventoryMoveItem(InventoryMoveItemEvent event) {
 
-        if(RedCraftProtect.getInstance().protectedElements.canBlockBeModified(event.getSource().getLocation(), event.getDestination().getLocation())){
+        if (RedCraftProtect.getInstance().protectedElements.canBlocksInteract(event.getSource().getLocation(), event.getDestination().getLocation())) {
             return;
         }
         event.setCancelled(true);

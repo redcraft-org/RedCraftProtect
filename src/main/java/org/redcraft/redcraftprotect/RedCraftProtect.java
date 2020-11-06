@@ -19,10 +19,11 @@ import java.util.List;
 
 public class RedCraftProtect extends JavaPlugin {
 
-    private static RedCraftProtect instance;
+    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.WORKBENCH, Material.HOPPER);
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
-    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.WORKBENCH, Material.HOPPER);
+
+    private static RedCraftProtect instance;
     private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
     private BlockPlaceListener blockPlaceListener = new BlockPlaceListener();
     private BlockBreakListener blockBreakListener = new BlockBreakListener();

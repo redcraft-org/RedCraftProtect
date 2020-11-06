@@ -13,8 +13,8 @@ public class CommandList implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Bukkit.broadcastMessage("List:");
-        for (ProtectedElement protectedElement: RedCraftProtect.getInstance().protectedElements.getAll()) {
-            sender.sendMessage(protectedElement.block.name());
+        for (ProtectedElement protectedElement : RedCraftProtect.getInstance().protectedElements.getAll()) {
+            sender.sendMessage(protectedElement.block.name() + " is owned by " + Bukkit.getPlayer(protectedElement.owner.player).getName());
         }
         return true;
     }
