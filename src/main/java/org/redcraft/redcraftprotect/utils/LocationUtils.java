@@ -1,11 +1,13 @@
 package org.redcraft.redcraftprotect.utils;
 
 import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class LocationUtils {
 
@@ -15,11 +17,11 @@ public class LocationUtils {
 
         World world = chunk.getWorld();
 
-        Integer startX = chunk.getX() - radius;
-        Integer endX = chunk.getX() + radius;
+        int startX = chunk.getX() - radius;
+        int endX = chunk.getX() + radius;
 
-        Integer startZ = chunk.getZ() - radius;
-        Integer endZ = chunk.getZ() + radius;
+        int startZ = chunk.getZ() - radius;
+        int endZ = chunk.getZ() + radius;
 
         for (int x = startX; x <= endX; x++){
             for (int z = startZ; z <= endZ; z++){
@@ -28,5 +30,31 @@ public class LocationUtils {
         }
 
         return nearbyChunks;
+    }
+
+    public static List<Block> getTileEntitiesFromChunks(List<Chunk> chunks) {
+        List<Block> nearbyTileEntities = new ArrayList<Block>();
+        for (Chunk chunk : chunks) {
+            BlockState[] tileEnTities = chunk.getTileEntities();
+            for (BlockState blockState : tileEnTities) {
+                nearbyTileEntities.add(blockState.getBlock());
+            }
+        }
+        return nearbyTileEntities;
+    }
+
+    public static List<Block> getNearbyTileEntitiesFromChunk(Chunk chunk, int radius) {
+        List<Chunk> nearbyChunks = getNearbyChunks(chunk, radius);
+
+        return getTileEntitiesFromChunks(nearbyChunks);
+    }
+
+    public static List<Block> getFilteredNearbyTileEntitiesFromChunk(Chunk chunk, int radius, Material material) {
+        List<Block> tileEntities = getNearbyTileEntitiesFromChunk(chunk, radius);
+
+        // TODO filter
+        tileEntities.removeIf(block -> !block.getType().equals(material));
+
+        return tileEntities;
     }
 }

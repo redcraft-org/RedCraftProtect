@@ -4,6 +4,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,12 +18,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BlockPlaceListener implements Listener {
-    final ArrayList<Material> beaconBlocks = new ArrayList<>(Arrays.asList(Material.IRON_BLOCK, Material.GOLD_BLOCK, Material.DIAMOND_BLOCK)); //Material.NETHERITE_BLOCK;
+    final ArrayList<Material> beaconBlocks = new ArrayList<>(Arrays.asList(Material.IRON_BLOCK, Material.GOLD_BLOCK, Material.DIAMOND_BLOCK, Material.NETHERITE_BLOCK));
 
-    public boolean isPartOfBeacon(Block block) {
+    public List<Block> isPartOfBeacon(Block block) {
         List<Chunk> nearbyChunks = LocationUtils.getNearbyChunks(block.getChunk(), 1);
-        List<Material> nearbyBeacons = nearbyChunks.
-        return false;
+        List<Block> nearbyBeacons = new ArrayList<Block>();
+        for (Chunk chunk : nearbyChunks) {
+            BlockState[] tileEnTities = chunk.getTileEntities();
+            for (BlockState blockState : tileEnTities) {
+                if (blockState.getType().equals(Material.BEACON)) {
+                    nearbyBeacons.add(blockState.getBlock());
+                }
+            }
+        }
+        return nearbyBeacons;
     }
 
     public boolean isPartOfBeaconStructure(Location blockLocation, Location beaconLocation) {
@@ -37,11 +46,11 @@ public class BlockPlaceListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockPlace(BlockPlaceEvent event) {
 
-        if (event.getBlock().equals(Material.BEACON)) {
+        if (event.getBlock().getType().equals(Material.BEACON)) {
             return;
         }
 
-        if (beaconBlocks.contains(event.getBlock())) {
+        if (beaconBlocks.contains(event.getBlock().getType())) {
             return;
         }
 

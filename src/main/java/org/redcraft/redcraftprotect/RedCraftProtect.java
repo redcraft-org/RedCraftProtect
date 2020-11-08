@@ -1,8 +1,10 @@
 package org.redcraft.redcraftprotect;
 
 import org.bukkit.Material;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.redcraft.redcraftprotect.database.DatabaseManager;
 import org.redcraft.redcraftprotect.listeners.blockListeners.BlockBreakListener;
@@ -14,6 +16,7 @@ import org.redcraft.redcraftprotect.models.world.ProtectedElements;
 import org.redcraft.redcraftprotect.runnables.ContainerOwnersSynchronizerTask;
 import org.redcraft.redcraftprotect.runnables.commands.CommandList;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +30,7 @@ public class RedCraftProtect extends JavaPlugin {
         super(loader, description, dataFolder, file);
     }
 
-    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.WORKBENCH, Material.HOPPER);
+    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.CRAFTING_TABLE, Material.HOPPER);
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
 

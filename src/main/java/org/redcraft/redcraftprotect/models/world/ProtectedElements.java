@@ -77,6 +77,6 @@ public class ProtectedElements {
     }
 
     public ArrayList<ProtectedElement> getAll() {
-        return new ArrayList(this.elements.values());
+        return new ArrayList<ProtectedElement>(this.elements.values());
     }
 }
