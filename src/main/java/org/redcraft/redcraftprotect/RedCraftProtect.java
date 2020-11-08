@@ -19,6 +19,14 @@ import java.util.List;
 
 public class RedCraftProtect extends JavaPlugin {
 
+    public RedCraftProtect() {
+        super();
+    }
+
+    protected RedCraftProtect(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
+    }
+
     public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.WORKBENCH, Material.HOPPER);
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
