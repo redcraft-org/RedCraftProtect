@@ -1,8 +1,10 @@
 package org.redcraft.redcraftprotect.models.world;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.redcraft.redcraftprotect.RedCraftProtect;
+import org.redcraft.redcraftprotect.utils.BeaconUtils;
 
 import java.util.*;
 
@@ -12,13 +14,26 @@ public class ProtectedElements {
 
 
     public boolean isBlockBreakable(Block block, UUID breaker) {
+        if (BeaconUtils.beaconBlocks.contains(block.getType())) {
+            if (breaker == null) {
+                return BeaconUtils.isBlockBreakable(block);
+            }
+
+            return BeaconUtils.isBlockBreakableByPlayer(block, breaker);
+        }
+
+
         if (!RedCraftProtect.getInstance().protectedBlocks.contains(block.getType())) {
             return true;
+
         }
+
         ProtectedElement protectedElement = this.get(block.getLocation());
+
         if (protectedElement != null && protectedElement.isBreakableBy(breaker)) {
             return true;
         }
+        Bukkit.broadcastMessage("passed all");
         return false;
     }
 
@@ -52,8 +67,7 @@ public class ProtectedElements {
         if (protectedElement == null) {
             return new ArrayList<>();
         }
-        ArrayList<UUID> players = new ArrayList<>();
-        players.addAll(protectedElement.trusted);
+        ArrayList<UUID> players = new ArrayList<>(protectedElement.trusted);
         players.add(protectedElement.owner.player);
         return players;
     }
@@ -77,6 +91,6 @@ public class ProtectedElements {
     }
 
     public ArrayList<ProtectedElement> getAll() {
-        return new ArrayList<ProtectedElement>(this.elements.values());
+        return new ArrayList<>(this.elements.values());
     }
 }

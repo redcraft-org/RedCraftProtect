@@ -1,5 +1,6 @@
 package org.redcraft.redcraftprotect.models.world;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.redcraft.redcraftprotect.RedCraftProtect;
@@ -36,6 +37,7 @@ public class ProtectedElement {
 
     public boolean isBreakableBy(UUID player) {
         return isAllowed(player) && (player == this.owner.player || this.owner.isTrustedFriend(player) || this.trusted.contains(player));
+        
     }
 
     public boolean isInteractable(UUID player) {

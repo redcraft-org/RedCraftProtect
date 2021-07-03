@@ -17,7 +17,7 @@ public class BlockBreakListener implements Listener {
             return;
         }
         if (!RedCraftProtect.getInstance().protectedElements.isBlockBreakable(block, event.getPlayer().getUniqueId())) {
-            event.getPlayer().sendMessage("This block is owned by " + Bukkit.getPlayer(RedCraftProtect.getInstance().protectedElements.get(block).owner.player).getDisplayName());
+            event.getPlayer().sendMessage("Break: This block is owned by " + Bukkit.getPlayer(RedCraftProtect.getInstance().protectedElements.get(block).owner.player).getDisplayName());
             event.setCancelled(true);
             return;
         }

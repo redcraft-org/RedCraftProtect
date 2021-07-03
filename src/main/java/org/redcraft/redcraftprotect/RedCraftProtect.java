@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.redcraft.redcraftprotect.database.DatabaseManager;
 import org.redcraft.redcraftprotect.listeners.blockListeners.BlockBreakListener;
 import org.redcraft.redcraftprotect.listeners.blockListeners.BlockPlaceListener;
+import org.redcraft.redcraftprotect.listeners.entityListeners.EntityChangeBlockListener;
 import org.redcraft.redcraftprotect.listeners.entityListeners.EntityExplodeListener;
 import org.redcraft.redcraftprotect.listeners.inventoryListeners.InventoryMoveItemListener;
 import org.redcraft.redcraftprotect.listeners.playerListeners.PlayerInteractListener;
@@ -30,7 +31,7 @@ public class RedCraftProtect extends JavaPlugin {
         super(loader, description, dataFolder, file);
     }
 
-    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.CRAFTING_TABLE, Material.HOPPER);
+    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON);
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
 
@@ -38,6 +39,7 @@ public class RedCraftProtect extends JavaPlugin {
     private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
     private BlockPlaceListener blockPlaceListener = new BlockPlaceListener();
     private BlockBreakListener blockBreakListener = new BlockBreakListener();
+    private EntityChangeBlockListener entityChangeBlockListener = new EntityChangeBlockListener();
     private EntityExplodeListener entityExplodeListener = new EntityExplodeListener();
     private InventoryMoveItemListener inventoryMoveItemListener = new InventoryMoveItemListener();
     private PlayerInteractListener playerInteractListener = new PlayerInteractListener();
@@ -63,6 +65,7 @@ public class RedCraftProtect extends JavaPlugin {
         pluginManager.registerEvents(blockPlaceListener, this);
         pluginManager.registerEvents(blockBreakListener, this);
         pluginManager.registerEvents(entityExplodeListener, this);
+        pluginManager.registerEvents(entityChangeBlockListener, this);
         pluginManager.registerEvents(inventoryMoveItemListener, this);
         pluginManager.registerEvents(playerInteractListener, this);
 

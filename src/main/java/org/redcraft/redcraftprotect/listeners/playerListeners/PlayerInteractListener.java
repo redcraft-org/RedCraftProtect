@@ -16,11 +16,10 @@ public class PlayerInteractListener implements Listener {
         if (block == null) {
             return;
         }
-        if (! RedCraftProtect.getInstance().protectedElements.isBlockBreakable(block,event.getPlayer().getUniqueId()))
-        {
-            event.getPlayer().sendMessage("This block is owned by " + Bukkit.getPlayer(RedCraftProtect.getInstance().protectedElements.get(block).owner.player).getDisplayName());
+
+        if (!RedCraftProtect.getInstance().protectedElements.isBlockBreakable(block, event.getPlayer().getUniqueId())) {
+            event.getPlayer().sendMessage("Interact: This block is owned by " + Bukkit.getPlayer(RedCraftProtect.getInstance().protectedElements.get(block).owner.player).getDisplayName());
             event.setCancelled(true);
-            return;
         }
     }
 }
