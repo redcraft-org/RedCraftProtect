@@ -23,19 +23,10 @@ import java.util.List;
 
 public class RedCraftProtect extends JavaPlugin {
 
-    public RedCraftProtect() {
-        super();
-    }
-
-    protected RedCraftProtect(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
-        super(loader, description, dataFolder, file);
-    }
-
+    private static RedCraftProtect instance;
     public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON);
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
-
-    private static RedCraftProtect instance;
     private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
     private BlockPlaceListener blockPlaceListener = new BlockPlaceListener();
     private BlockBreakListener blockBreakListener = new BlockBreakListener();
@@ -43,6 +34,12 @@ public class RedCraftProtect extends JavaPlugin {
     private EntityExplodeListener entityExplodeListener = new EntityExplodeListener();
     private InventoryMoveItemListener inventoryMoveItemListener = new InventoryMoveItemListener();
     private PlayerInteractListener playerInteractListener = new PlayerInteractListener();
+    public RedCraftProtect() {
+        super();
+    }
+    protected RedCraftProtect(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
+    }
 
     static public RedCraftProtect getInstance() {
         return instance;

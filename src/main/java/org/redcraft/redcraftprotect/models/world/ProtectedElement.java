@@ -20,7 +20,6 @@ public class ProtectedElement {
     public ArrayList<UUID> removed;
     public LocalDateTime localDateTime;
 
-
     public ProtectedElement(UUID player, Location location, Material block) {
         this.owner = RedCraftProtect.getInstance().redCraftProtectUsers.getUser(player);
         this.location = location;
@@ -31,23 +30,50 @@ public class ProtectedElement {
         this.localDateTime = LocalDateTime.now();
     }
 
+    public static String getPermissionErrorString(Permission permission) {
+        switch (permission) {
+            case BREAK -> {
+                return "";
+            }
+            case EDIT -> {
+                return "You cannot break this block only edit it";
+            }
+            case OPEN -> {
+                return "You cannot break this block only look at it";
+            }
+            default -> {
+                return "You cannot break this block";
+            }
+        }
+    }
+
+    public Permission getPermissionsForPlayer(UUID player) {
+        if (this.isBreakableBy(player)) {
+            return Permission.BREAK;
+        }
+        if (this.isInteractable(player)) {
+            return Permission.EDIT;
+        }
+        return Permission.NONE;
+    }
+
     public boolean isAllowed(UUID player) {
         return !(player == null || this.removed.contains(player));
     }
 
     public boolean isBreakableBy(UUID player) {
-        return isAllowed(player) && (player == this.owner.player || this.owner.isTrustedFriend(player) || this.trusted.contains(player));
-        
+        boolean isAllowed = isAllowed(player);
+        return isAllowed && (player.equals(this.owner.player) || this.owner.isTrustedFriend(player) || this.trusted.contains(player));
     }
 
     public boolean isInteractable(UUID player) {
-        boolean canInteract = player == this.owner.player || this.owner.isTrustedFriend(player) || this.trusted.contains(player);
+        boolean canInteract = player.equals(this.owner.player) || this.owner.isTrustedFriend(player) || this.trusted.contains(player);
         canInteract = canInteract || this.owner.isAddedFriend(player) || this.added.contains(player);
         return isAllowed(player) && canInteract;
     }
 
     public boolean isOwner(UUID player) {
-        return player == this.owner.player;
+        return player.equals(this.owner.player);
     }
 
     public boolean isTrusted(UUID player) {
@@ -66,6 +92,10 @@ public class ProtectedElement {
         if (!this.isTrusted(player)) {
             this.trusted.add(player);
         }
+    }
+
+    public enum Permission {
+        BREAK, EDIT, OPEN, NONE;
     }
 
 

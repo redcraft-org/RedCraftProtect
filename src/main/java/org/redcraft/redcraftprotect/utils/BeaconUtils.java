@@ -1,24 +1,23 @@
 package org.redcraft.redcraftprotect.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.Player;
 import org.redcraft.redcraftprotect.RedCraftProtect;
+import org.redcraft.redcraftprotect.models.world.ProtectedElement;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 public class BeaconUtils {
 
     public final static ArrayList<Material> beaconBlocks = new ArrayList<>(Arrays.asList(Material.IRON_BLOCK, Material.EMERALD, Material.GOLD_BLOCK, Material.DIAMOND_BLOCK, Material.NETHERITE_BLOCK));
 
-    public static List<Block> geNearbyBeacons(Location location) {
+    private static List<Block> getNearbyBeacons(Location location) {
         List<Chunk> nearbyChunks = LocationUtils.getNearbyChunks(location.getChunk(), 1);
         List<Block> nearbyBeacons = new ArrayList<>();
         for (Chunk chunk : nearbyChunks) {
@@ -41,11 +40,10 @@ public class BeaconUtils {
     }
 
     public static boolean isBlockBreakableByPlayer(Block block, UUID breaker) {
-        List<Block> nearbyBeacons = geNearbyBeacons(block.getLocation());
+        List<Block> nearbyBeacons = getNearbyBeacons(block.getLocation());
         for (Block nearbyBeacon : nearbyBeacons) {
             if (isPartOfBeaconStructure(block.getLocation(), nearbyBeacon.getLocation())) {
                 if (!RedCraftProtect.getInstance().protectedElements.isBlockBreakable(nearbyBeacon, breaker)) {
-                    Bukkit.getPlayer(breaker).sendMessage("This block is owned by " + Bukkit.getPlayer(RedCraftProtect.getInstance().protectedElements.get(block).owner.player).getDisplayName());
                     return false;
                 }
             }
@@ -54,13 +52,39 @@ public class BeaconUtils {
     }
 
     public static boolean isBlockBreakable(Block block) {
-        List<Block> nearbyBeacons = geNearbyBeacons(block.getLocation());
+        List<Block> nearbyBeacons = getNearbyBeacons(block.getLocation());
         for (Block nearbyBeacon : nearbyBeacons) {
             if (isPartOfBeaconStructure(block.getLocation(), nearbyBeacon.getLocation())) {
                 return false;
             }
         }
         return true;
+    }
+
+    public static ProtectedInteractionResult getInteractionResult(Block block) {
+        return getInteractionResult(block, null);
+    }
+
+    public static ProtectedInteractionResult getInteractionResult(Block block, UUID breaker) {
+        List<Block> nearbyBeacons = getNearbyBeacons(block.getLocation());
+        for (Block nearbyBeacon : nearbyBeacons) {
+            if (isPartOfBeaconStructure(block.getLocation(), nearbyBeacon.getLocation())) {
+                ProtectedInteractionResult interactionResult = RedCraftProtect.getInstance().protectedElements.getInteractionResult(nearbyBeacon, breaker);
+                if (!interactionResult.isBreakable()) {
+                    return new ProtectedInteractionResult(ProtectedElement.Permission.NONE, breaker, interactionResult.message);
+                }
+            }
+        }
+        return new ProtectedInteractionResult(ProtectedElement.Permission.BREAK, breaker, "houhouhou");
+    }
+
+    public static String getBeaconError(Location location, String playerName) {
+        String errorString = "This block belongs to the beacon situated at ";
+        errorString += +location.getBlockX() + "X ";
+        errorString += +location.getBlockY() + "Y ";
+        errorString += +location.getBlockZ() + "Z ";
+        errorString += " and belongs to " + playerName;
+        return errorString;
     }
 
 }

@@ -24,13 +24,6 @@ public class BlockPlaceListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockPlace(BlockPlaceEvent event) {
 
-        if (event.getBlock().getType().equals(Material.BEACON)) {
-            return;
-        }
-
-        if (BeaconUtils.beaconBlocks.contains(event.getBlock().getType())) {
-            return;
-        }
 
         if (RedCraftProtect.getInstance().protectedBlocks.contains(event.getBlock().getType())) {
             ProtectedElement protectedElement = new ProtectedElement(event.getPlayer().getUniqueId(), event.getBlock().getLocation(), event.getBlock().getType());

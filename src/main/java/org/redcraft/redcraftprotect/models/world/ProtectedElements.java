@@ -2,9 +2,11 @@ package org.redcraft.redcraftprotect.models.world;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.redcraft.redcraftprotect.RedCraftProtect;
 import org.redcraft.redcraftprotect.utils.BeaconUtils;
+import org.redcraft.redcraftprotect.utils.ProtectedInteractionResult;
 
 import java.util.*;
 
@@ -12,29 +14,47 @@ import java.util.*;
 public class ProtectedElements {
     public HashMap<Location, ProtectedElement> elements = new HashMap<>();
 
+    public ProtectedInteractionResult getInteractionResult(Block block) {
+        return getInteractionResult(block, null);
+    }
+
+    public ProtectedInteractionResult getInteractionResult(Block block, UUID breaker) {
+        if (BeaconUtils.beaconBlocks.contains(block.getType())) {
+            return BeaconUtils.getInteractionResult(block, breaker);
+        }
+        if (!RedCraftProtect.getInstance().protectedBlocks.contains(block.getType())) {
+            return new ProtectedInteractionResult(ProtectedElement.Permission.BREAK, breaker);
+        }
+        Location location = block.getLocation();
+        ProtectedElement protectedElement = this.get(location);
+        String playerName = Bukkit.getServer().getOfflinePlayer(protectedElement.owner.player).getName();
+
+        if (protectedElement == null) {
+            return new ProtectedInteractionResult(ProtectedElement.Permission.BREAK, breaker);
+        }
+
+        String errorString = "You can't break this block";
+
+        if (block.getType().equals(Material.BEACON)) {
+            errorString = BeaconUtils.getBeaconError(location, playerName);
+        }
+        return new ProtectedInteractionResult(protectedElement.getPermissionsForPlayer(breaker), breaker, errorString);
+    }
 
     public boolean isBlockBreakable(Block block, UUID breaker) {
         if (BeaconUtils.beaconBlocks.contains(block.getType())) {
             if (breaker == null) {
                 return BeaconUtils.isBlockBreakable(block);
             }
-
             return BeaconUtils.isBlockBreakableByPlayer(block, breaker);
         }
-
-
         if (!RedCraftProtect.getInstance().protectedBlocks.contains(block.getType())) {
             return true;
-
         }
 
         ProtectedElement protectedElement = this.get(block.getLocation());
 
-        if (protectedElement != null && protectedElement.isBreakableBy(breaker)) {
-            return true;
-        }
-        Bukkit.broadcastMessage("passed all");
-        return false;
+        return protectedElement != null && protectedElement.isBreakableBy(breaker);
     }
 
     public void add(ProtectedElement protectedElement) {
@@ -46,7 +66,7 @@ public class ProtectedElements {
     }
 
     public ProtectedElement get(Block block) {
-        return this.elements.getOrDefault(block.getLocation(), null);
+        return this.get(block.getLocation());
     }
 
 
@@ -87,7 +107,7 @@ public class ProtectedElements {
         }
         ArrayList<UUID> players1 = this.getPlayersAdded(location1);
         ArrayList<UUID> players2 = this.getPlayersAdded(location2);
-        return !Collections.disjoint(Arrays.asList(players1), Arrays.asList(players2));
+        return !Collections.disjoint(List.of(players1), List.of(players2));
     }
 
     public ArrayList<ProtectedElement> getAll() {
