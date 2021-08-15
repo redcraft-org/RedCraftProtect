@@ -67,7 +67,7 @@ public class ProtectedElement {
         if (this.owner.player.equals(player)) {
             return true;
         }
-        return this.friends.hasPermission(player, permission);
+        return this.friends.hasPermission(player, permission) || this.owner.friends.hasPermission(player, permission);
     }
 
     public boolean isBreakableBy(UUID player) {
