@@ -1,13 +1,12 @@
 package org.redcraft.redcraftprotect.models.world;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.redcraft.redcraftprotect.RedCraftProtect;
+import org.redcraft.redcraftprotect.RedCraftProtectFriends;
 import org.redcraft.redcraftprotect.RedCraftProtectUser;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class ProtectedElement {
@@ -15,18 +14,14 @@ public class ProtectedElement {
     public RedCraftProtectUser owner;
     public Location location;
     public Material block;
-    public ArrayList<UUID> trusted;
-    public ArrayList<UUID> added;
-    public ArrayList<UUID> removed;
+    public RedCraftProtectFriends friends;
     public LocalDateTime localDateTime;
 
     public ProtectedElement(UUID player, Location location, Material block) {
         this.owner = RedCraftProtect.getInstance().redCraftProtectUsers.getUser(player);
         this.location = location;
         this.block = block;
-        this.trusted = new ArrayList<>();
-        this.added = new ArrayList<>();
-        this.removed = new ArrayList<>();
+        this.friends = new RedCraftProtectFriends();
         this.localDateTime = LocalDateTime.now();
     }
 
@@ -57,46 +52,60 @@ public class ProtectedElement {
         return Permission.NONE;
     }
 
-    public boolean isAllowed(UUID player) {
-        return !(player == null || this.removed.contains(player));
+    public boolean hasPermission(UUID player, Permission permission) {
+        if (this.owner.player.equals(player)) {
+            return true;
+        }
+        return this.friends.hasPermission(player, permission);
     }
 
     public boolean isBreakableBy(UUID player) {
-        boolean isAllowed = isAllowed(player);
-        return isAllowed && (player.equals(this.owner.player) || this.owner.isTrustedFriend(player) || this.trusted.contains(player));
+        if (this.owner.player.equals(player)) {
+            return true;
+        }
+        return this.hasPermission(player, Permission.BREAK) && this.owner.hasPermission(player, Permission.BREAK);
     }
 
     public boolean isInteractable(UUID player) {
-        boolean canInteract = player.equals(this.owner.player) || this.owner.isTrustedFriend(player) || this.trusted.contains(player);
-        canInteract = canInteract || this.owner.isAddedFriend(player) || this.added.contains(player);
-        return isAllowed(player) && canInteract;
+        if (this.owner.player.equals(player)) {
+            return true;
+        }
+        return this.hasPermission(player, Permission.OPEN) && this.owner.hasPermission(player, Permission.OPEN);
+    }
+
+    public boolean isEditable(UUID player) {
+        if (this.owner.player.equals(player)) {
+            return true;
+        }
+        return this.hasPermission(player, Permission.EDIT) && this.owner.hasPermission(player, Permission.EDIT);
     }
 
     public boolean isOwner(UUID player) {
         return player.equals(this.owner.player);
     }
 
-    public boolean isTrusted(UUID player) {
-        return this.trusted.contains(player);
+    public static boolean isChestLikeContainer(Material blockBellowType) {
+        return blockBellowType.equals(Material.CHEST) ||
+                blockBellowType.equals(Material.TRAPPED_CHEST);
     }
 
-    public boolean isAdded(UUID player) {
-        return this.trusted.contains(player);
-    }
-
-    public boolean isRemoved(UUID player) {
-        return this.trusted.contains(player);
-    }
-
-    public void addTrusted(UUID player) {
-        if (!this.isTrusted(player)) {
-            this.trusted.add(player);
-        }
-    }
 
     public enum Permission {
-        BREAK, EDIT, OPEN, NONE;
-    }
+        BREAK(4),
+        EDIT(3),
+        OPEN(2),
+        NONE(1);
+        private final Integer permissionLevel;
 
+        Permission(int permissionLevel) {
+            this.permissionLevel = permissionLevel;
+        }
+
+        public boolean isHigherOrEqual(Permission other) {
+            return this.permissionLevel >= other.permissionLevel;
+        }
+
+
+    }
 
 }

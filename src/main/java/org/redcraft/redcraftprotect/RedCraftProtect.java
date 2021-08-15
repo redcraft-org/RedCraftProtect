@@ -11,6 +11,7 @@ import org.redcraft.redcraftprotect.listeners.blockListeners.BlockBreakListener;
 import org.redcraft.redcraftprotect.listeners.blockListeners.BlockPlaceListener;
 import org.redcraft.redcraftprotect.listeners.entityListeners.EntityChangeBlockListener;
 import org.redcraft.redcraftprotect.listeners.entityListeners.EntityExplodeListener;
+import org.redcraft.redcraftprotect.listeners.inventoryListeners.InventoryClickListener;
 import org.redcraft.redcraftprotect.listeners.inventoryListeners.InventoryMoveItemListener;
 import org.redcraft.redcraftprotect.listeners.playerListeners.PlayerInteractListener;
 import org.redcraft.redcraftprotect.models.world.ProtectedElements;
@@ -24,7 +25,7 @@ import java.util.List;
 public class RedCraftProtect extends JavaPlugin {
 
     private static RedCraftProtect instance;
-    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON);
+    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.BARREL, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON);
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
     private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
@@ -34,9 +35,12 @@ public class RedCraftProtect extends JavaPlugin {
     private EntityExplodeListener entityExplodeListener = new EntityExplodeListener();
     private InventoryMoveItemListener inventoryMoveItemListener = new InventoryMoveItemListener();
     private PlayerInteractListener playerInteractListener = new PlayerInteractListener();
+    private InventoryClickListener inventoryClickListener = new InventoryClickListener();
+
     public RedCraftProtect() {
         super();
     }
+
     protected RedCraftProtect(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
     }
@@ -65,6 +69,7 @@ public class RedCraftProtect extends JavaPlugin {
         pluginManager.registerEvents(entityChangeBlockListener, this);
         pluginManager.registerEvents(inventoryMoveItemListener, this);
         pluginManager.registerEvents(playerInteractListener, this);
+        pluginManager.registerEvents(inventoryClickListener, this);
 
         // Commands
         this.getCommand("rplist").setExecutor(new CommandList());

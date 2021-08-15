@@ -6,23 +6,26 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.redcraft.redcraftprotect.RedCraftProtect;
+import org.redcraft.redcraftprotect.models.world.ProtectedElement;
+import org.redcraft.redcraftprotect.models.world.ProtectedElements;
 import org.redcraft.redcraftprotect.utils.ProtectedInteractionResult;
+
+import java.util.UUID;
 
 public class BlockBreakListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        ProtectedInteractionResult interactionResult = RedCraftProtect.getInstance().protectedElements.getInteractionResult(block, event.getPlayer().getUniqueId());
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        ProtectedElements elements = RedCraftProtect.getInstance().protectedElements;
+        ProtectedInteractionResult interactionResult = elements.getInteractionResult(block, playerUUID, ProtectedElement.Permission.BREAK);
         if (!interactionResult.isBreakable()) {
             event.getPlayer().sendMessage(interactionResult.message);
             event.setCancelled(true);
             return;
         }
 
-        if (RedCraftProtect.getInstance().protectedBlocks.contains(block.getType())) {
-            RedCraftProtect.getInstance().protectedElements.remove(block);
-        }
 
     }
 }

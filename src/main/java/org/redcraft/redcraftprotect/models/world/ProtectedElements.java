@@ -5,6 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.redcraft.redcraftprotect.RedCraftProtect;
+import org.redcraft.redcraftprotect.RedCraftProtectFriend;
+import org.redcraft.redcraftprotect.RedCraftProtectFriends;
 import org.redcraft.redcraftprotect.utils.BeaconUtils;
 import org.redcraft.redcraftprotect.utils.ProtectedInteractionResult;
 
@@ -15,10 +17,18 @@ public class ProtectedElements {
     public HashMap<Location, ProtectedElement> elements = new HashMap<>();
 
     public ProtectedInteractionResult getInteractionResult(Block block) {
-        return getInteractionResult(block, null);
+        return getInteractionResult(block, ProtectedElement.Permission.BREAK);
     }
 
     public ProtectedInteractionResult getInteractionResult(Block block, UUID breaker) {
+        return getInteractionResult(block, breaker, ProtectedElement.Permission.BREAK);
+    }
+
+    public ProtectedInteractionResult getInteractionResult(Block block, ProtectedElement.Permission neededPermission) {
+        return getInteractionResult(block, neededPermission);
+    }
+
+    public ProtectedInteractionResult getInteractionResult(Block block, UUID breaker, ProtectedElement.Permission neededPermission) {
         if (BeaconUtils.beaconBlocks.contains(block.getType())) {
             return BeaconUtils.getInteractionResult(block, breaker);
         }
@@ -27,18 +37,29 @@ public class ProtectedElements {
         }
         Location location = block.getLocation();
         ProtectedElement protectedElement = this.get(location);
-        String playerName = Bukkit.getServer().getOfflinePlayer(protectedElement.owner.player).getName();
-
         if (protectedElement == null) {
             return new ProtectedInteractionResult(ProtectedElement.Permission.BREAK, breaker);
         }
-
-        String errorString = "You can't break this block";
+        String playerName = Bukkit.getServer().getOfflinePlayer(protectedElement.owner.player).getName();
+        String errorString = "";
+        switch (neededPermission) {
+            case EDIT -> {
+                errorString = "You can't edit this block";
+            }
+            case OPEN -> {
+                errorString = "You can't open this block";
+            }
+            default -> {
+                errorString = "You can't break this block";
+            }
+        }
 
         if (block.getType().equals(Material.BEACON)) {
             errorString = BeaconUtils.getBeaconError(location, playerName);
         }
-        return new ProtectedInteractionResult(protectedElement.getPermissionsForPlayer(breaker), breaker, errorString);
+
+        ProtectedElement.Permission permission = protectedElement.getPermissionsForPlayer(breaker);
+        return new ProtectedInteractionResult(permission, breaker, errorString);
     }
 
     public boolean isBlockBreakable(Block block, UUID breaker) {
@@ -70,26 +91,12 @@ public class ProtectedElements {
     }
 
 
-    public ArrayList<UUID> getPlayersAdded(Location location) {
+    public RedCraftProtectFriends getFriends(Location location) {
         ProtectedElement protectedElement = this.get(location);
         if (protectedElement == null) {
-            return new ArrayList<>();
+            return new RedCraftProtectFriends();
         }
-        ArrayList<UUID> players = new ArrayList<>();
-        players.addAll(protectedElement.trusted);
-        players.addAll(protectedElement.added);
-        players.add(protectedElement.owner.player);
-        return players;
-    }
-
-    public ArrayList<UUID> getPlayersTrusted(Location location) {
-        ProtectedElement protectedElement = this.get(location);
-        if (protectedElement == null) {
-            return new ArrayList<>();
-        }
-        ArrayList<UUID> players = new ArrayList<>(protectedElement.trusted);
-        players.add(protectedElement.owner.player);
-        return players;
+        return protectedElement.friends.add(protectedElement.friends);
     }
 
     public void remove(Location location) {
@@ -101,13 +108,24 @@ public class ProtectedElements {
     }
 
     public boolean canBlocksInteract(Location location1, Location location2) {
+        return canBlocksInteract(location1, location2, ProtectedElement.Permission.EDIT);
+    }
 
-        if (this.get(location1) == null && this.get(location2) == null) {
+    public boolean canBlocksInteract(Location location1, Location location2, ProtectedElement.Permission permission) {
+        ProtectedElement block1 = this.get(location1);
+        ProtectedElement block2 = this.get(location2);
+        if (block1 == null && block2 == null) {
             return true;
         }
-        ArrayList<UUID> players1 = this.getPlayersAdded(location1);
-        ArrayList<UUID> players2 = this.getPlayersAdded(location2);
-        return !Collections.disjoint(List.of(players1), List.of(players2));
+        if (block1.owner.player.equals(block2.owner.player)) {
+            return true;
+        }
+
+        RedCraftProtectFriend owner1 = new RedCraftProtectFriend(block1.owner, ProtectedElement.Permission.BREAK);
+        RedCraftProtectFriend owner2 = new RedCraftProtectFriend(block2.owner, ProtectedElement.Permission.BREAK);
+        RedCraftProtectFriends friends1 = this.getFriends(location1).add(owner1).filter(ProtectedElement.Permission.EDIT);
+        RedCraftProtectFriends friends2 = this.getFriends(location2).add(owner2).filter(ProtectedElement.Permission.EDIT);
+        return !Collections.disjoint(List.of(friends1.friends), List.of(friends2.friends));
     }
 
     public ArrayList<ProtectedElement> getAll() {

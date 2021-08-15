@@ -52,7 +52,7 @@ public class ProtectedInteractionResult {
         return this.permission == ProtectedElement.Permission.EDIT || this.isBreakable();
     }
 
-    public boolean isOpenable() {
+    public boolean isInteractable() {
         return this.permission == ProtectedElement.Permission.OPEN || this.isEditable();
     }
 
