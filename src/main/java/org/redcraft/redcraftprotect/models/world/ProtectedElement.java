@@ -27,10 +27,12 @@ public class ProtectedElement {
         this.localDateTime = LocalDateTime.now();
     }
 
+    //containers that can break if a block is placed above
     public static boolean isChestLikeContainer(Material block) {
         List<Material> containers = List.of(new Material[]{
                 Material.CHEST,
                 Material.TRAPPED_CHEST,
+                Material.HOPPER,
         });
         return containers.contains(block);
     }

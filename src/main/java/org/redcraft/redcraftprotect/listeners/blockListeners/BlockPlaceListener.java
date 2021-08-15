@@ -36,10 +36,6 @@ public class BlockPlaceListener implements Listener {
         // TODO example if glass is placed above a chest, the later is still openable
 
         // Checks if click will affect possible container bellow
-        Block blockPlacedAgainst = event.getBlockAgainst();
-        if (blockPlacedAgainst.getY() >= block.getY()) {
-            return;
-        }
         Block blockBellow = block.getLocation().subtract(0, 1, 0).getBlock();
         Material blockBellowType = blockBellow.getType();
         if (!isChestLikeContainer(blockBellowType)) {

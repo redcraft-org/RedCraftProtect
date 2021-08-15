@@ -32,7 +32,6 @@ public class InventoryPickupItemListener implements Listener {
         UUID itemOwnerUUID = event.getItem().getThrower();
 
         // TODO prevent spam of event that will cause lag
-
         if (!element.hasPermission(itemOwnerUUID, Permission.EDIT)) {
             event.setCancelled(true);
         }
