@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.redcraft.redcraftprotect.database.DatabaseManager;
 import org.redcraft.redcraftprotect.listeners.blockListeners.BlockBreakListener;
+import org.redcraft.redcraftprotect.listeners.blockListeners.BlockDispenseListener;
 import org.redcraft.redcraftprotect.listeners.blockListeners.BlockPlaceListener;
 import org.redcraft.redcraftprotect.listeners.entityListeners.EntityChangeBlockListener;
 import org.redcraft.redcraftprotect.listeners.entityListeners.EntityExplodeListener;
@@ -27,10 +28,13 @@ import java.util.List;
 public class RedCraftProtect extends JavaPlugin {
 
     private static RedCraftProtect instance;
-    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON);
+    private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
+
+    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON, Material.DISPENSER);
+
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
-    private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
+
     private BlockPlaceListener blockPlaceListener = new BlockPlaceListener();
     private BlockBreakListener blockBreakListener = new BlockBreakListener();
     private EntityChangeBlockListener entityChangeBlockListener = new EntityChangeBlockListener();
@@ -40,6 +44,7 @@ public class RedCraftProtect extends JavaPlugin {
     private InventoryClickListener inventoryClickListener = new InventoryClickListener();
     private InventoryOpenListener inventoryOpenListener = new InventoryOpenListener();
     private InventoryPickupItemListener onInventoryPickupItemListener = new InventoryPickupItemListener();
+    private BlockDispenseListener onBlockDispenseListener = new BlockDispenseListener();
 
     public RedCraftProtect() {
         super();
@@ -76,6 +81,7 @@ public class RedCraftProtect extends JavaPlugin {
         pluginManager.registerEvents(inventoryClickListener, this);
         pluginManager.registerEvents(inventoryOpenListener, this);
         pluginManager.registerEvents(onInventoryPickupItemListener, this);
+        pluginManager.registerEvents(onBlockDispenseListener, this);
 
         // Commands
         this.getCommand("rplist").setExecutor(new CommandList());

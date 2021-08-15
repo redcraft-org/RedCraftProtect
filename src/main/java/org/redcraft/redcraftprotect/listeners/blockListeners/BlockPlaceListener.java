@@ -11,6 +11,7 @@ import org.redcraft.redcraftprotect.RedCraftProtect;
 import org.redcraft.redcraftprotect.models.world.Permission;
 import org.redcraft.redcraftprotect.models.world.ProtectedElement;
 import org.redcraft.redcraftprotect.models.world.ProtectedElements;
+import org.redcraft.redcraftprotect.utils.BeaconUtils;
 import org.redcraft.redcraftprotect.utils.ProtectedInteractionResult;
 
 import java.util.UUID;
@@ -25,29 +26,40 @@ public class BlockPlaceListener implements Listener {
         Block block = event.getBlock();
         Player player = event.getPlayer();
 
-        if (RedCraftProtect.getInstance().protectedBlocks.contains(block.getType())) {
-            ProtectedElement protectedElement = new ProtectedElement(player.getUniqueId(), block.getLocation(), block.getType());
-            RedCraftProtect.getInstance().protectedElements.add(protectedElement);
+        ProtectedElements elements = RedCraftProtect.getInstance().protectedElements;
+
+        if (block.getType().equals(Material.BEACON)) {
+            Block closestBeacon = BeaconUtils.getClosestNearbyBeacon(block);
+            if (closestBeacon != null && closestBeacon.getLocation().distance(block.getLocation()) <= 10) {
+                ProtectedInteractionResult interactionResult = elements.getInteractionResult(closestBeacon, player.getUniqueId(), Permission.EDIT);
+                if (!interactionResult.isEditable()) {
+                    player.sendMessage("You can't place this beacon, it is too close to someone else's");
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         }
 
         // TODO add support for barrels and shulker boxes
-
         // TODO check if block placed doesn't affect the bellow tile
         // TODO example if glass is placed above a chest, the later is still openable
-
         // Checks if click will affect possible container bellow
         Block blockBellow = block.getLocation().subtract(0, 1, 0).getBlock();
         Material blockBellowType = blockBellow.getType();
-        if (!isChestLikeContainer(blockBellowType)) {
-            return;
+        if (isChestLikeContainer(blockBellowType)) {
+            block = blockBellow;
+            UUID playerUUID = player.getUniqueId();
+            ProtectedInteractionResult interactionResult = elements.getInteractionResult(block, playerUUID, Permission.EDIT);
+            if (!interactionResult.isBreakable()) {
+                player.sendMessage("You can't place a block above this container");
+                event.setCancelled(true);
+                return;
+            }
         }
-        block = blockBellow;
-        ProtectedElements elements = RedCraftProtect.getInstance().protectedElements;
-        UUID playerUUID = player.getUniqueId();
-        ProtectedInteractionResult interactionResult = elements.getInteractionResult(block, playerUUID, Permission.EDIT);
-        if (!interactionResult.isBreakable()) {
-            player.sendMessage("You can't place a block above this container");
-            event.setCancelled(true);
+
+        if (RedCraftProtect.getInstance().protectedBlocks.contains(block.getType())) {
+            ProtectedElement protectedElement = new ProtectedElement(player.getUniqueId(), block.getLocation(), block.getType());
+            RedCraftProtect.getInstance().protectedElements.add(protectedElement);
         }
     }
 }

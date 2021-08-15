@@ -20,7 +20,6 @@ public class ProtectedElements {
         return getInteractionResult(block, Permission.BREAK);
     }
 
-
     public ProtectedInteractionResult getInteractionResult(Block block, UUID breaker) {
         return getInteractionResult(block, breaker, Permission.BREAK);
     }
@@ -68,6 +67,7 @@ public class ProtectedElements {
         return protectedElement != null && protectedElement.isBreakableBy(breaker);
     }
 
+    // TODO sync with DB
     public void add(ProtectedElement protectedElement) {
         this.elements.put(protectedElement.location, protectedElement);
     }
@@ -94,6 +94,10 @@ public class ProtectedElements {
 
     public void remove(Block block) {
         this.elements.remove(block.getLocation());
+    }
+
+    public boolean canBlocksInteract(Block block1, Block block2) {
+        return canBlocksInteract(block1.getLocation(), block2.getLocation());
     }
 
     public boolean canBlocksInteract(Location location1, Location location2) {

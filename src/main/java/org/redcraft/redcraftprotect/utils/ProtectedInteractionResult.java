@@ -11,7 +11,6 @@ public class ProtectedInteractionResult {
     public String message;
     public Permission permission;
     public UUID playerUUID = null;
-    public UUID ownerUUID = null;
 
     public ProtectedInteractionResult(Permission permission) {
         this.message = Permission.getPermissionErrorString(permission);

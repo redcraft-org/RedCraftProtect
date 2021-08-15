@@ -7,17 +7,16 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.redcraft.redcraftprotect.RedCraftProtect;
 import org.redcraft.redcraftprotect.models.world.Permission;
-import org.redcraft.redcraftprotect.models.world.ProtectedElement;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
 
 public class BeaconUtils {
 
     public final static ArrayList<Material> beaconBlocks = new ArrayList<>(Arrays.asList(Material.IRON_BLOCK, Material.EMERALD, Material.GOLD_BLOCK, Material.DIAMOND_BLOCK, Material.NETHERITE_BLOCK));
 
+
+    // TODO cache with location hashmap and don't forget to remove on break
     private static List<Block> getNearbyBeacons(Location location) {
         List<Chunk> nearbyChunks = LocationUtils.getNearbyChunks(location.getChunk(), 1);
         List<Block> nearbyBeacons = new ArrayList<>();
@@ -29,7 +28,32 @@ public class BeaconUtils {
                 }
             }
         }
+        nearbyBeacons.sort(Comparator.comparing((Block block) -> block.getLocation().distance(location)));
         return nearbyBeacons;
+    }
+
+    public static Block getClosestNearbyBeacon(Block block) {
+        return getClosestNearbyBeacon(block.getLocation());
+    }
+
+    public static Block getClosestNearbyBeacon(Location location) {
+        List<Block> nearbyBeacons = getNearbyBeacons(location);
+        if (nearbyBeacons.size() == 0) {
+            return null;
+        }
+        Block closestBeacon = nearbyBeacons.get(0);
+        if (!closestBeacon.getLocation().equals(location)) {
+            return closestBeacon;
+        }
+        if (nearbyBeacons.size() == 1) {
+            return null;
+        }
+        return nearbyBeacons.get(1);
+    }
+
+    public static boolean isMinimalBeaconPlacingDistance(Location location) {
+        Block closestBeacon = getClosestNearbyBeacon(location);
+        return closestBeacon == null || closestBeacon.getLocation().distance(location) >= 10;
     }
 
     public static boolean isPartOfBeaconStructure(Location blockLocation, Location beaconLocation) {
@@ -69,21 +93,22 @@ public class BeaconUtils {
     public static ProtectedInteractionResult getInteractionResult(Block block, UUID breaker) {
         List<Block> nearbyBeacons = getNearbyBeacons(block.getLocation());
         for (Block nearbyBeacon : nearbyBeacons) {
-            if (isPartOfBeaconStructure(block.getLocation(), nearbyBeacon.getLocation())) {
-                ProtectedInteractionResult interactionResult = RedCraftProtect.getInstance().protectedElements.getInteractionResult(nearbyBeacon, breaker);
-                if (!interactionResult.isBreakable()) {
-                    return new ProtectedInteractionResult(Permission.NONE, breaker, interactionResult.message);
-                }
+            if (!isPartOfBeaconStructure(block.getLocation(), nearbyBeacon.getLocation())) {
+                continue;
+            }
+            ProtectedInteractionResult interactionResult = RedCraftProtect.getInstance().protectedElements.getInteractionResult(nearbyBeacon, breaker);
+            if (!interactionResult.isBreakable()) {
+                return new ProtectedInteractionResult(Permission.NONE, breaker, interactionResult.message);
             }
         }
-        return new ProtectedInteractionResult(Permission.BREAK, breaker, "houhouhou");
+        return new ProtectedInteractionResult(Permission.BREAK, breaker);
     }
 
     public static String getBeaconError(Location location, String playerName) {
         String errorString = "This block belongs to the beacon situated at ";
-        errorString += +location.getBlockX() + "X ";
-        errorString += +location.getBlockY() + "Y ";
-        errorString += +location.getBlockZ() + "Z ";
+        errorString += location.getBlockX() + "X ";
+        errorString += location.getBlockY() + "Y ";
+        errorString += location.getBlockZ() + "Z ";
         errorString += " and belongs to " + playerName;
         return errorString;
     }
