@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.redcraft.redcraftprotect.RedCraftProtect;
+import org.redcraft.redcraftprotect.models.world.Permission;
 import org.redcraft.redcraftprotect.models.world.ProtectedElement;
 import org.redcraft.redcraftprotect.models.world.ProtectedElements;
 import org.redcraft.redcraftprotect.utils.ProtectedInteractionResult;
@@ -28,6 +29,13 @@ public class BlockPlaceListener implements Listener {
             ProtectedElement protectedElement = new ProtectedElement(player.getUniqueId(), block.getLocation(), block.getType());
             RedCraftProtect.getInstance().protectedElements.add(protectedElement);
         }
+
+        // TODO add support for barrels and shulker boxes
+
+        // TODO check if block placed doesn't affect the bellow tile
+        // TODO example if glass is placed above a chest, the later is still openable
+
+        // Checks if click will affect possible container bellow
         Block blockPlacedAgainst = event.getBlockAgainst();
         if (blockPlacedAgainst.getY() <= block.getY()) {
             return;
@@ -40,7 +48,7 @@ public class BlockPlaceListener implements Listener {
         block = blockBellow;
         ProtectedElements elements = RedCraftProtect.getInstance().protectedElements;
         UUID playerUUID = player.getUniqueId();
-        ProtectedInteractionResult interactionResult = elements.getInteractionResult(block, playerUUID, ProtectedElement.Permission.EDIT);
+        ProtectedInteractionResult interactionResult = elements.getInteractionResult(block, playerUUID, Permission.EDIT);
         if (!interactionResult.isBreakable()) {
             player.sendMessage("You can't place a block above this container");
             event.setCancelled(true);

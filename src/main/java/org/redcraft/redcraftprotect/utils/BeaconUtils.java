@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.redcraft.redcraftprotect.RedCraftProtect;
+import org.redcraft.redcraftprotect.models.world.Permission;
 import org.redcraft.redcraftprotect.models.world.ProtectedElement;
 
 import java.util.ArrayList;
@@ -71,11 +72,11 @@ public class BeaconUtils {
             if (isPartOfBeaconStructure(block.getLocation(), nearbyBeacon.getLocation())) {
                 ProtectedInteractionResult interactionResult = RedCraftProtect.getInstance().protectedElements.getInteractionResult(nearbyBeacon, breaker);
                 if (!interactionResult.isBreakable()) {
-                    return new ProtectedInteractionResult(ProtectedElement.Permission.NONE, breaker, interactionResult.message);
+                    return new ProtectedInteractionResult(Permission.NONE, breaker, interactionResult.message);
                 }
             }
         }
-        return new ProtectedInteractionResult(ProtectedElement.Permission.BREAK, breaker, "houhouhou");
+        return new ProtectedInteractionResult(Permission.BREAK, breaker, "houhouhou");
     }
 
     public static String getBeaconError(Location location, String playerName) {

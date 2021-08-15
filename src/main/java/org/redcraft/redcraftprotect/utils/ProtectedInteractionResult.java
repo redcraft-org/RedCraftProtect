@@ -2,36 +2,36 @@ package org.redcraft.redcraftprotect.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.redcraft.redcraftprotect.models.world.ProtectedElement;
+import org.redcraft.redcraftprotect.models.world.Permission;
 
 import java.util.UUID;
 
 public class ProtectedInteractionResult {
 
     public String message;
-    public ProtectedElement.Permission permission;
+    public Permission permission;
     public UUID playerUUID = null;
     public UUID ownerUUID = null;
 
-    public ProtectedInteractionResult(ProtectedElement.Permission permission) {
-        this.message = ProtectedElement.getPermissionErrorString(permission);
+    public ProtectedInteractionResult(Permission permission) {
+        this.message = Permission.getPermissionErrorString(permission);
         this.permission = permission;
     }
 
-    public ProtectedInteractionResult(ProtectedElement.Permission permission, UUID playerUUID) {
+    public ProtectedInteractionResult(Permission permission, UUID playerUUID) {
         this.message = "This block is unbreakable";
         this.permission = permission;
         this.playerUUID = playerUUID;
     }
 
-    public ProtectedInteractionResult(ProtectedElement.Permission permission, UUID playerUUID, String message) {
+    public ProtectedInteractionResult(Permission permission, UUID playerUUID, String message) {
         this.message = message;
         this.permission = permission;
         this.playerUUID = playerUUID;
     }
 
     public void sendMessage() {
-        if (this.playerUUID == null && this.permission != ProtectedElement.Permission.NONE) {
+        if (this.playerUUID == null && this.permission != Permission.NONE) {
             return;
         }
         Player player = Bukkit.getPlayer(this.playerUUID);
@@ -41,19 +41,19 @@ public class ProtectedInteractionResult {
     }
 
     public String getMessage() {
-        return ProtectedElement.getPermissionErrorString(this.permission);
+        return Permission.getPermissionErrorString(this.permission);
     }
 
     public boolean isBreakable() {
-        return this.permission == ProtectedElement.Permission.BREAK;
+        return this.permission == Permission.BREAK;
     }
 
     public boolean isEditable() {
-        return this.permission == ProtectedElement.Permission.EDIT || this.isBreakable();
+        return this.permission == Permission.EDIT || this.isBreakable();
     }
 
     public boolean isInteractable() {
-        return this.permission == ProtectedElement.Permission.OPEN || this.isEditable();
+        return this.permission == Permission.OPEN || this.isEditable();
     }
 
 

@@ -7,7 +7,9 @@ import org.redcraft.redcraftprotect.RedCraftProtectFriends;
 import org.redcraft.redcraftprotect.RedCraftProtectUser;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+
 
 public class ProtectedElement {
 
@@ -25,29 +27,39 @@ public class ProtectedElement {
         this.localDateTime = LocalDateTime.now();
     }
 
-    public static String getPermissionErrorString(Permission permission) {
-        switch (permission) {
-            case BREAK -> {
-                return "";
-            }
-            case EDIT -> {
-                return "You cannot break this block only edit it";
-            }
-            case OPEN -> {
-                return "You cannot break this block only look at it";
-            }
-            default -> {
-                return "You cannot break this block";
-            }
-        }
+
+    public static boolean isChestLikeContainer(Material block) {
+        List<Material> containers = List.of(new Material[]{
+                Material.CHEST,
+                Material.TRAPPED_CHEST,
+        });
+        return containers.contains(block);
+    }
+
+    public static boolean isContainer(Material block) {
+        List<Material> containers = List.of(new Material[]{
+                Material.CHEST,
+                Material.TRAPPED_CHEST,
+                Material.HOPPER,
+                Material.SHULKER_BOX,
+                Material.BARREL,
+                Material.FURNACE,
+                Material.BEACON,
+                Material.BLAST_FURNACE,
+                Material.SMOKER
+        });
+        return containers.contains(block);
     }
 
     public Permission getPermissionsForPlayer(UUID player) {
-        if (this.isBreakableBy(player)) {
+        if (this.owner.player.equals(player)) {
             return Permission.BREAK;
         }
-        if (this.isInteractable(player)) {
-            return Permission.EDIT;
+        if (this.friends.friendList.containsKey(player)) {
+            return friends.get(player).permission;
+        }
+        if (this.owner.friends.friendList.containsKey(player)) {
+            return friends.get(player).permission;
         }
         return Permission.NONE;
     }
@@ -63,49 +75,25 @@ public class ProtectedElement {
         if (this.owner.player.equals(player)) {
             return true;
         }
-        return this.hasPermission(player, Permission.BREAK) && this.owner.hasPermission(player, Permission.BREAK);
+        return this.hasPermission(player, Permission.BREAK) || this.owner.hasPermission(player, Permission.BREAK);
     }
 
     public boolean isInteractable(UUID player) {
         if (this.owner.player.equals(player)) {
             return true;
         }
-        return this.hasPermission(player, Permission.OPEN) && this.owner.hasPermission(player, Permission.OPEN);
+        return this.hasPermission(player, Permission.OPEN) || this.owner.hasPermission(player, Permission.OPEN);
     }
 
     public boolean isEditable(UUID player) {
         if (this.owner.player.equals(player)) {
             return true;
         }
-        return this.hasPermission(player, Permission.EDIT) && this.owner.hasPermission(player, Permission.EDIT);
+        return this.hasPermission(player, Permission.EDIT) || this.owner.hasPermission(player, Permission.EDIT);
     }
 
     public boolean isOwner(UUID player) {
         return player.equals(this.owner.player);
-    }
-
-    public static boolean isChestLikeContainer(Material blockBellowType) {
-        return blockBellowType.equals(Material.CHEST) ||
-                blockBellowType.equals(Material.TRAPPED_CHEST);
-    }
-
-
-    public enum Permission {
-        BREAK(4),
-        EDIT(3),
-        OPEN(2),
-        NONE(1);
-        private final Integer permissionLevel;
-
-        Permission(int permissionLevel) {
-            this.permissionLevel = permissionLevel;
-        }
-
-        public boolean isHigherOrEqual(Permission other) {
-            return this.permissionLevel >= other.permissionLevel;
-        }
-
-
     }
 
 }
