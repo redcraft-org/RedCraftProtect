@@ -26,7 +26,7 @@ import java.util.List;
 public class RedCraftProtect extends JavaPlugin {
 
     private static RedCraftProtect instance;
-    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.BARREL, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON);
+    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON);
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
     private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
