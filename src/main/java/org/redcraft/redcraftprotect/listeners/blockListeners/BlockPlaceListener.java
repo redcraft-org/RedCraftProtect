@@ -37,7 +37,7 @@ public class BlockPlaceListener implements Listener {
 
         // Checks if click will affect possible container bellow
         Block blockPlacedAgainst = event.getBlockAgainst();
-        if (blockPlacedAgainst.getY() <= block.getY()) {
+        if (blockPlacedAgainst.getY() >= block.getY()) {
             return;
         }
         Block blockBellow = block.getLocation().subtract(0, 1, 0).getBlock();

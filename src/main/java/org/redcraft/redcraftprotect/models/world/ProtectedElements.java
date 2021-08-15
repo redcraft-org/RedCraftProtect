@@ -26,7 +26,7 @@ public class ProtectedElements {
     }
 
     public ProtectedInteractionResult getInteractionResult(Block block, Permission neededPermission) {
-        return getInteractionResult(block, neededPermission);
+        return getInteractionResult(block, null, neededPermission);
     }
 
     public ProtectedInteractionResult getInteractionResult(Block block, UUID breaker, Permission neededPermission) {
@@ -39,6 +39,7 @@ public class ProtectedElements {
         Location location = block.getLocation();
         ProtectedElement protectedElement = this.get(location);
         if (protectedElement == null) {
+
             return new ProtectedInteractionResult(Permission.BREAK, breaker);
         }
         String playerName = Bukkit.getServer().getOfflinePlayer(protectedElement.owner.player).getName();
@@ -102,17 +103,18 @@ public class ProtectedElements {
     public boolean canBlocksInteract(Location location1, Location location2, Permission permission) {
         ProtectedElement block1 = this.get(location1);
         ProtectedElement block2 = this.get(location2);
-        if (block1 == null && block2 == null) {
+        if (block1 == null || block2 == null) {
             return true;
         }
+        // Checks if both owners are same
         if (block1.owner.player.equals(block2.owner.player)) {
             return true;
         }
 
         RedCraftProtectFriend owner1 = new RedCraftProtectFriend(block1.owner, Permission.BREAK);
         RedCraftProtectFriend owner2 = new RedCraftProtectFriend(block2.owner, Permission.BREAK);
-        RedCraftProtectFriends friends1 = this.getFriends(location1).add(owner1).filter(Permission.EDIT);
-        RedCraftProtectFriends friends2 = this.getFriends(location2).add(owner2).filter(Permission.EDIT);
+        RedCraftProtectFriends friends1 = this.getFriends(location1).add(owner1).filter(permission);
+        RedCraftProtectFriends friends2 = this.getFriends(location2).add(owner2).filter(permission);
         return !Collections.disjoint(List.of(friends1.friendList), List.of(friends2.friendList));
     }
 

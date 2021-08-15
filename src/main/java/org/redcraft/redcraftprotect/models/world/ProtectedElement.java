@@ -27,7 +27,6 @@ public class ProtectedElement {
         this.localDateTime = LocalDateTime.now();
     }
 
-
     public static boolean isChestLikeContainer(Material block) {
         List<Material> containers = List.of(new Material[]{
                 Material.CHEST,

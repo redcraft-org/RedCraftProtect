@@ -13,6 +13,7 @@ import org.redcraft.redcraftprotect.listeners.entityListeners.EntityChangeBlockL
 import org.redcraft.redcraftprotect.listeners.entityListeners.EntityExplodeListener;
 import org.redcraft.redcraftprotect.listeners.inventoryListeners.InventoryClickListener;
 import org.redcraft.redcraftprotect.listeners.inventoryListeners.InventoryMoveItemListener;
+import org.redcraft.redcraftprotect.listeners.inventoryListeners.InventoryOpenListener;
 import org.redcraft.redcraftprotect.listeners.playerListeners.PlayerInteractListener;
 import org.redcraft.redcraftprotect.models.world.ProtectedElements;
 import org.redcraft.redcraftprotect.runnables.ContainerOwnersSynchronizerTask;
@@ -36,6 +37,7 @@ public class RedCraftProtect extends JavaPlugin {
     private InventoryMoveItemListener inventoryMoveItemListener = new InventoryMoveItemListener();
     private PlayerInteractListener playerInteractListener = new PlayerInteractListener();
     private InventoryClickListener inventoryClickListener = new InventoryClickListener();
+    private InventoryOpenListener inventoryOpenListener = new InventoryOpenListener();
 
     public RedCraftProtect() {
         super();
@@ -70,6 +72,7 @@ public class RedCraftProtect extends JavaPlugin {
         pluginManager.registerEvents(inventoryMoveItemListener, this);
         pluginManager.registerEvents(playerInteractListener, this);
         pluginManager.registerEvents(inventoryClickListener, this);
+        pluginManager.registerEvents(inventoryOpenListener, this);
 
         // Commands
         this.getCommand("rplist").setExecutor(new CommandList());
