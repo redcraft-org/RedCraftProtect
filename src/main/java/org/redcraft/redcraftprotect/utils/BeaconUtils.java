@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.redcraft.redcraftprotect.RedCraftProtect;
-import org.redcraft.redcraftprotect.models.world.Permission;
+import org.redcraft.redcraftprotect.models.Permission;
 
 import java.util.*;
 
@@ -17,7 +17,7 @@ public class BeaconUtils {
 
 
     // TODO cache with location hashmap and don't forget to remove on break
-    private static List<Block> getNearbyBeacons(Location location) {
+    public static List<Block> getNearbyBeacons(Location location) {
         List<Chunk> nearbyChunks = LocationUtils.getNearbyChunks(location.getChunk(), 1);
         List<Block> nearbyBeacons = new ArrayList<>();
         for (Chunk chunk : nearbyChunks) {

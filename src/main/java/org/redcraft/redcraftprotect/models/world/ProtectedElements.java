@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.redcraft.redcraftprotect.RedCraftProtect;
 import org.redcraft.redcraftprotect.RedCraftProtectFriend;
 import org.redcraft.redcraftprotect.RedCraftProtectFriends;
+import org.redcraft.redcraftprotect.models.Permission;
 import org.redcraft.redcraftprotect.utils.BeaconUtils;
 import org.redcraft.redcraftprotect.utils.ProtectedInteractionResult;
 

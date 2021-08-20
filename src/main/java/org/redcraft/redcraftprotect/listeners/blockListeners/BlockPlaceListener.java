@@ -8,12 +8,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.redcraft.redcraftprotect.RedCraftProtect;
-import org.redcraft.redcraftprotect.models.world.Permission;
+import org.redcraft.redcraftprotect.models.Permission;
 import org.redcraft.redcraftprotect.models.world.ProtectedElement;
 import org.redcraft.redcraftprotect.models.world.ProtectedElements;
 import org.redcraft.redcraftprotect.utils.BeaconUtils;
 import org.redcraft.redcraftprotect.utils.ProtectedInteractionResult;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.redcraft.redcraftprotect.models.world.ProtectedElement.isChestLikeContainer;
@@ -28,15 +29,20 @@ public class BlockPlaceListener implements Listener {
 
         ProtectedElements elements = RedCraftProtect.getInstance().protectedElements;
 
+        // TODO export to BeaconUtils
         if (block.getType().equals(Material.BEACON)) {
-            Block closestBeacon = BeaconUtils.getClosestNearbyBeacon(block);
-            if (closestBeacon != null && closestBeacon.getLocation().distance(block.getLocation()) <= 10) {
+            List<Block> nearbyBeacons = BeaconUtils.getNearbyBeacons(block.getLocation());
+            for (Block closestBeacon : nearbyBeacons) {
+                if (closestBeacon == null || closestBeacon.getLocation().distance(block.getLocation()) > 10) {
+                    continue;
+                }
                 ProtectedInteractionResult interactionResult = elements.getInteractionResult(closestBeacon, player.getUniqueId(), Permission.EDIT);
                 if (!interactionResult.isEditable()) {
                     player.sendMessage("You can't place this beacon, it is too close to someone else's");
                     event.setCancelled(true);
                     return;
                 }
+
             }
         }
 
@@ -56,8 +62,8 @@ public class BlockPlaceListener implements Listener {
                 return;
             }
         }
-
-        if (RedCraftProtect.getInstance().protectedBlocks.contains(block.getType())) {
+        boolean defaultPlacable = true;
+        if (defaultPlacable && RedCraftProtect.getInstance().protectedBlocks.contains(block.getType())) {
             ProtectedElement protectedElement = new ProtectedElement(player.getUniqueId(), block.getLocation(), block.getType());
             RedCraftProtect.getInstance().protectedElements.add(protectedElement);
         }

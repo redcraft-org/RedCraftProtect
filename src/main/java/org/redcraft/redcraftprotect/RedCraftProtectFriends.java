@@ -1,6 +1,6 @@
 package org.redcraft.redcraftprotect;
 
-import org.redcraft.redcraftprotect.models.world.Permission;
+import org.redcraft.redcraftprotect.models.Permission;
 
 import java.util.HashMap;
 import java.util.UUID;

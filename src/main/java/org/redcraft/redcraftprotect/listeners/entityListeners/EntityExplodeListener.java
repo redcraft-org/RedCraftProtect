@@ -5,7 +5,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.redcraft.redcraftprotect.RedCraftProtect;
-import org.redcraft.redcraftprotect.models.world.Permission;
+import org.redcraft.redcraftprotect.models.Permission;
 import org.redcraft.redcraftprotect.models.world.ProtectedElements;
 
 public class EntityExplodeListener implements Listener {

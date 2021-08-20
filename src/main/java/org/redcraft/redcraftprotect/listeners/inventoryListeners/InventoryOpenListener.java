@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.BlockInventoryHolder;
 import org.bukkit.inventory.InventoryHolder;
 import org.redcraft.redcraftprotect.RedCraftProtect;
-import org.redcraft.redcraftprotect.models.world.Permission;
+import org.redcraft.redcraftprotect.models.Permission;
 import org.redcraft.redcraftprotect.utils.ProtectedInteractionResult;
 
 import java.util.UUID;

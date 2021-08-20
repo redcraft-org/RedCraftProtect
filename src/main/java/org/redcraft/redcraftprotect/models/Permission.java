@@ -1,10 +1,11 @@
-package org.redcraft.redcraftprotect.models.world;
+package org.redcraft.redcraftprotect.models;
 
 public enum Permission {
-    BREAK(4),
-    EDIT(3),
-    OPEN(2),
-    NONE(1);
+    BREAK(3),
+    REMOVE(2),
+    ADD(1),
+    OPEN(0);
+
     private final Integer permissionLevel;
 
     Permission(int permissionLevel) {
@@ -13,8 +14,14 @@ public enum Permission {
 
     public static String getPermissionErrorString(Permission permission) {
         switch (permission) {
-            case EDIT -> {
+            case BREAK -> {
                 return "You can't edit this block";
+            }
+            case REMOVE -> {
+                return "You can't remove items from this block";
+            }
+            case ADD -> {
+                return "You can't add items to this block";
             }
             case OPEN -> {
                 return "You can't open this block";
@@ -33,5 +40,7 @@ public enum Permission {
         return this.permissionLevel >= other.permissionLevel;
     }
 
-
+    public int getPermissionOffset() {
+        return this.permissionLevel;
+    }
 }

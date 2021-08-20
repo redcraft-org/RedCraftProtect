@@ -28,13 +28,25 @@ import java.util.List;
 public class RedCraftProtect extends JavaPlugin {
 
     private static RedCraftProtect instance;
-    private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
-
-    public List<Material> protectedBlocks = Arrays.asList(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.CRAFTING_TABLE, Material.HOPPER, Material.BEACON, Material.DISPENSER);
-
+    public List<Material> protectedBlocks = Arrays.asList(
+            Material.CHEST,
+            Material.TRAPPED_CHEST,
+            Material.FURNACE,
+            Material.BLAST_FURNACE,
+            Material.SMOKER,
+            Material.BARREL,
+            Material.HOPPER,
+            Material.BEACON,
+            Material.DISPENSER,
+            Material.DROPPER,
+            Material.LECTERN,
+            Material.JUKEBOX,
+            Material.CRAFTING_TABLE,
+            Material.ANVIL
+    );
     public RedCraftProtectUsers redCraftProtectUsers = new RedCraftProtectUsers();
     public ProtectedElements protectedElements = new ProtectedElements();
-
+    private ContainerOwnersSynchronizerTask containerOwnersSynchronizerTask = new ContainerOwnersSynchronizerTask();
     private BlockPlaceListener blockPlaceListener = new BlockPlaceListener();
     private BlockBreakListener blockBreakListener = new BlockBreakListener();
     private EntityChangeBlockListener entityChangeBlockListener = new EntityChangeBlockListener();

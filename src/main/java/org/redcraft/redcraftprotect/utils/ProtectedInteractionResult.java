@@ -2,7 +2,7 @@ package org.redcraft.redcraftprotect.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.redcraft.redcraftprotect.models.world.Permission;
+import org.redcraft.redcraftprotect.models.Permission;
 
 import java.util.UUID;
 

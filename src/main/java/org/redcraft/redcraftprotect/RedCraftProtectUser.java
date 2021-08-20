@@ -1,7 +1,6 @@
 package org.redcraft.redcraftprotect;
 
-import org.redcraft.redcraftprotect.models.world.Permission;
-import org.redcraft.redcraftprotect.models.world.ProtectedElement;
+import org.redcraft.redcraftprotect.models.Permission;
 
 import java.util.UUID;
 

@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.BlockInventoryHolder;
 import org.bukkit.inventory.InventoryHolder;
 import org.redcraft.redcraftprotect.RedCraftProtect;
-import org.redcraft.redcraftprotect.models.world.Permission;
+import org.redcraft.redcraftprotect.models.Permission;
 import org.redcraft.redcraftprotect.models.world.ProtectedElement;
 import org.redcraft.redcraftprotect.models.world.ProtectedElements;
 
